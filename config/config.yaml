@@ -1,0 +1,14 @@
+model:
+  name: "allenai/macaw-large"  # model name
+  max_seq_length: 512          # max token length for the model inputs
+  batch_size: 4                # batch size
+
+training:
+  epochs: 3
+  learning_rate: 5e-5
+  weight_decay: 0.01
+
+data:
+  train_test_split: 0.2         # split ratio for training and validation
+  input_column: "input_text"    # column name for inputs in processed data
+  response_column: "response_text"  # column name for responses
