@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Default for proper rendering on mobiles -->
+  <title>WebGL Navigation</title>
+  <style>
+    body {
+      background-color: #000000;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh; /* full viewport height */
+      margin: 0;
+    }
+    h1 {
+      font-size: 3em;
+      color: #1b4dd6;
+      text-shadow: 2px 2px #062a8e;
+      margin-bottom: 50px;
+    }
+    #container {
+      display: flex;
+      justify-content: space-around; /* Evenly */
+      width: 80%;
+    }
+    .option {
+      cursor: pointer;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 25px;
+      background-color: #1b4dd6;
+      color: #ffffff;
+      font-size: 1.5em;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      text-align: center;
+      box-shadow: 3px 3px 5px #062a8e;
+    }
+    .option:hover {
+      background-color: #5e79c3;
+    }
+    #logo {
+      position: absolute;
+      top: 20px;
+      right: 50px;
+    }
+    #logo img {
+      height: 150px;
+    }
+  </style>
+</head>
+<body>
+  <div id="logo">
+    <img src="assets/logo.png" alt="Logo">
+  </div>
+  <h1>3D Graphic Project</h1>
+  <div id="container">
+    <div class="option" onclick="window.location.href='loading_scene/scene.html'">Walk Around<br>a 3D Scene</div>
+    <div class="option" onclick="window.location.href='loading_scene/changing-room.html'">Go to the <br>Changing Room</div>
+  </div>
+</body>
+</html>
