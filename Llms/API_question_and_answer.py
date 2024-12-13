@@ -1,8 +1,9 @@
-# main.py
 import requests
 import json
 from tqdm import tqdm
+from IPython.display import clear_output
 
+# Set of question selected from ICliniq dataset (augmented)
 questions = [
     "I am a 23 year old female. Few weeks earlier, I had tooth pain after eating. Yesterday, I had acute pain in the tooth. What is your opinion about the extent of decay? And also I would like to know about the possible diagnosis.",
     "I am a 23 year old male. Few weeks earlier, I had tooth pain after eating. Yesterday, I had acute pain in the tooth. What is your opinion about the extent of decay? And also I would like to know about the possible diagnosis.",
@@ -62,6 +63,7 @@ questions = [
     "I am a 22-years-old male, weighing 90 pounds and my height is five feet. It started this year. I was feeling dizzy and had painful neck veins. Then the following day, I had heart palpitations, chest pain, pain in my throat down to my chest, and lots of appetites, but I had still lost weight. I feel tired most of the time. When the heart palpitation started, I had shivering or trembling and painful muscles, especially the upper back and shoulders. I also have headaches, epigastric pain, lower abdominal pain, and eye pain. I am currently taking Propanol medicine."
 ]
 
+# Function to query the models with a predefined input
 def query(question, model):
     request_url = f"https://api-inference.huggingface.co/models/{model}/v1/chat/completions"
     headers = {"Authorization": "Bearer YOU_TOKEN"}
@@ -90,6 +92,7 @@ def query(question, model):
 
     return stream_response(request_url, headers, payload)
 
+# Function to see the response real-time to debug it
 def stream_response(request_url, headers, payload):
     response = requests.post(request_url, headers=headers, json=payload, stream=True)
     response_text = ""
@@ -105,10 +108,10 @@ def stream_response(request_url, headers, payload):
                     print(data["choices"][0]["delta"]["content"], end="")
     return response_text
 
-from IPython.display import clear_output
-
+# Loading the three selected models
 models = ["Qwen/Qwen2.5-72B-Instruct", "mistralai/Mistral-7B-Instruct-v0.2", "meta-llama/Meta-Llama-3-8B-Instruct"]
 
+# Loop to iterate through the models and questions + save the output
 for i, model in enumerate(models):
     question_answer = []
     for j, question in enumerate(questions):
@@ -124,9 +127,7 @@ for i, model in enumerate(models):
     with open(f'question_answer_{model_name}.json', 'w') as f:
         json.dump(question_answer, f, indent=4)
 
-import json
-from IPython.display import clear_output
-
+# Function to extract a field from a json file
 def extract_answers_from_json(json_file):
     """
     Reads a JSON file and extracts the 'answer' field from each entry.
@@ -153,7 +154,7 @@ def extract_answers_from_json(json_file):
         print("Error decoding JSON file.")
         return []
 
-# Example usage
+# Debug statements
 json_file_path1 = "question_answer_meta-llama.json"
 json_file_path2 = "question_answer_mistralai.json"
 json_file_path3 = "question_answer_qwen.json"

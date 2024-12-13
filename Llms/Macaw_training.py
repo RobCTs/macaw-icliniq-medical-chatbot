@@ -16,10 +16,12 @@ import pandas as pd
 import re
 import numpy as np
 
-## Load the Macaw Model and Tokenizer
+########################################
+## Load the Macaw Model and Tokenizer ##
+########################################
 
 # Load the Macaw model and tokenizer
-model_name = "allenai/macaw-large"  # choose 'macaw-3b' or '11b' for higher RAM availability
+model_name = "allenai/macaw-large"  # choose 'macaw-3b' or '11b' with higher RAM availability
 tokenizer = T5Tokenizer.from_pretrained(model_name, clean_up_tokenization_spaces=True)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
@@ -29,7 +31,10 @@ print(model)
 print("\nTokenizer Configuration:")
 print(tokenizer)
 
-## Inspect the iCliniq Dataset
+#################################
+## Inspect the iCliniq Dataset ##
+#################################
+
 # Load the iCliniq dataset
 icliniq_dataset = load_dataset("ophycare/icliniq-dataset", split="train")
 
@@ -48,7 +53,10 @@ for i in range(5):
     print(f"Entry {i + 1}:\n{df['text'].iloc[i]}\n{'=' * 50}")
 
 
-## Identify Patterns in the Dataset
+######################################
+## Identify Patterns in the Dataset ##
+######################################
+
 # Define patterns for extraction
 instruction_pattern = "Instruction:"
 input_pattern = "Input:"
@@ -63,7 +71,10 @@ df['response_count'] = df['text'].str.count(response_pattern)
 print("Pattern Counts in First Few Entries:")
 print(df[['instruction_count', 'input_count', 'response_count']].head())
 
-## Split Dataset into Train and Validation Sets
+
+##################################################
+## Split Dataset into Train and Validation Sets ##
+##################################################
 
 # Perform an 80-20 split for training and validation
 train_test_split = icliniq_dataset.train_test_split(test_size=0.2, seed=42)
@@ -78,7 +89,11 @@ validation_df = validation_dataset.to_pandas()
 print(f"Training Set Size: {len(train_dataset)}")
 print(f"Validation Set Size: {len(validation_dataset)}")
 
-## Preprocess the Dataset for Training
+
+#########################################
+## Preprocess the Dataset for Training ##
+#########################################
+
 # Function to preprocess the dataset into (Input, Response) tuples
 def preprocess_dataset(df):
     data_tuples = []
@@ -112,7 +127,11 @@ def compute_metrics(eval_pred):
     
     return {k: round(v, 4) for k, v in result.items()}
 
-## PATH B: Define Training Arguments & Data Collato (lookin at the training)
+
+###############################################################################
+## PATH B: Define Training Arguments & Data Collato (lookin at the training) ##
+###############################################################################
+
 # Set up training arguments
 training_args = Seq2SeqTrainingArguments(
     output_dir='./results',
@@ -134,10 +153,10 @@ training_args = Seq2SeqTrainingArguments(
     generation_max_length=512,
     gradient_accumulation_steps=3,
     gradient_checkpointing=False,
-    fp16=True,  # Use mixed precision
+    fp16=True,  # mixed precision
     fp16_full_eval=True,
     metric=
-    max_grad_norm=1.0  # Gradient clipping
+    max_grad_norm=1.0  # gradient clipping
 )
 
 # Custom collate function for Seq2Seq models
@@ -150,7 +169,10 @@ def collate_fn(batch):
     labels[labels == tokenizer.pad_token_id] = -100
     return {"input_ids": inputs["input_ids"], "attention_mask": inputs["attention_mask"], "labels": labels}
 
-## Train Model
+#################
+## Train Model ##
+#################
+
 # Create the trainer instance
 trainer = Seq2SeqTrainer(
     model=model,
@@ -168,7 +190,10 @@ trainer.train()
 trainer.save_model('icliniq_model_wSeq2Seq')
 
 
-## PATH A
+############
+## PATH A ##
+############
+
 #Parameters and training without looking at M. trainings (but finished the epoches and 
 # "just" having CUDA memory problem when saving the final model.
 
@@ -192,7 +217,11 @@ trainer.save_model('icliniq_model_wSeq2Seq')
 #    predict_with_generate=True,
 #)
 
-## Generate Predictions
+
+##########################
+## Generate Predictions ##
+##########################
+
 # Function to generate a response from the model
 def generate_response(query):
     # Construct input with clearer context for the model
